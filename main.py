@@ -120,6 +120,9 @@ class NN(object):
         self.hl_2.update(self.lr, self.reg)
         self.hl_1.update(self.lr, self.reg)
 
+    def change_lr(self, lr):
+        self.lr = lr
+
 
 # Configuration
 
@@ -127,13 +130,16 @@ dataset = MnistDataset('/Users/mir/PycharmProjects/IFT6135_LAB1/mnist.pkl.gz')
 
 np.random.seed(42)
 
-epochs = 100
-batch_size = 1000
+epochs = 10
+batch_size = 10
 
 image_res = 28 * 28
 classes = 10
 learning_rate = 1e-2
 reg_factor = 1e-5
+
+step_lr = 8
+gamma = 0.1
 
 hiddens = (512, 512)
 init_mode = ['zeros', 'normal', 'glorot'][2]
@@ -258,6 +264,9 @@ if __name__ == '__main__':
         test_loss, test_acc = test(epoch + 1)
         test_losses.append(test_loss)
         test_accs.append(test_acc)
+
+        if epoch % step_lr == (step_lr - 1):
+            model.change_lr(model.lr * gamma)
 
     log_results('train_loss_' + init_mode + '.csv', train_losses, train_accs)
     log_results('valid_loss_' + init_mode + '.csv', valid_losses, valid_accs)
